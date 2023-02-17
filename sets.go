@@ -43,12 +43,14 @@ func (s Set[C]) Contains(elt C) bool {
 	return ok
 }
 
-func (s Set[C]) Add(elt C) {
+func (s Set[C]) Add(elt C) Set[C] {
 	s[elt] = struct{}{}
+	return s
 }
 
-func (s Set[C]) Delete(elt C) {
+func (s Set[C]) Delete(elt C) Set[C] {
 	delete(s, elt)
+	return s
 }
 
 func (s Set[C]) AddSet(secondSet Set[C]) Set[C] {
@@ -66,13 +68,12 @@ func (s Set[C]) SubtractSet(secondSet Set[C]) Set[C] {
 }
 
 func (s Set[C]) Intersect(secondSet Set[C]) Set[C] {
-	result := Set[C]{}
 	for key, _ := range s {
 		if !secondSet.Contains(key) {
 			delete(s, key)
 		}
 	}
-	return result
+	return s
 }
 
 func (s Set[C]) ToSlice() []C {
