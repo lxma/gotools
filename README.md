@@ -1,10 +1,12 @@
 # gotools
-Standard library for go programming
+Standard library for go programming.
 
-The corresponding functions should actually part of a standard
-library. However, they are not.
+Contains tools for sets, mapping, futures, and others.
 
-Up to now they are in an experimental state. Real signatures and
-package structure might be suboptimal and change in future.
+Note that I consider none of this being of noticable quality. Particularly, the implementation of sets are probably
+not really efficient.
 
-Initial snapshot version
+Also, some things are in a rather experimental state. (I the Future function useful? What interface should the set
+functions have?)
+
+Still, the current state is sufficent for myself.
