@@ -1,3 +1,3 @@
-module github.com/lxma/gotools v0.0.1-SNAPSHOT
+module github.com/lxma/gotools
 
 go 1.19
