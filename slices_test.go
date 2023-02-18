@@ -23,6 +23,18 @@ func TestRemove(t *testing.T) {
 	assert.Equal(t, []int{1, 3}, Remove([]int{1, 2, 3, 4}, func(n int) bool { return n%2 == 0 }))
 }
 
+func TestTakeWhile(t *testing.T) {
+	assert.Equal(t, []int{1, 2}, TakeWhile([]int{1, 2, 3, 4}, func(n int) bool { return n < 3 }))
+	assert.Equal(t, []int{}, TakeWhile([]int{1, 2, 3, 4}, func(n int) bool { return n > 10 }))
+	assert.Equal(t, []int{}, TakeWhile([]int{}, func(n int) bool { return n < 3 }))
+}
+
+func TestDropWhile(t *testing.T) {
+	assert.Equal(t, []int{3, 4}, DropWhile([]int{1, 2, 3, 4}, func(n int) bool { return n < 3 }))
+	assert.Equal(t, []int{}, DropWhile([]int{}, func(n int) bool { return n < 3 }))
+	assert.Equal(t, []int{}, DropWhile([]int{1, 2, 3, 4}, func(n int) bool { return n < 10 }))
+}
+
 func TestMap(t *testing.T) {
 	assert.Equal(t, []int{1, 2, 3}, Map([]string{"1", "2", "3"}, StringToInt))
 	assert.Equal(t, []int{}, Map([]string{}, StringToInt), "empty slice")

@@ -1,5 +1,23 @@
 package gotools
 
+func TakeWhile[A any](slc []A, f func(A) bool) []A {
+	for i, elt := range slc {
+		if !f(elt) {
+			return slc[0:i]
+		}
+	}
+	return slc
+}
+
+func DropWhile[A any](slc []A, f func(A) bool) []A {
+	for i, elt := range slc {
+		if !f(elt) {
+			return slc[i:]
+		}
+	}
+	return []A{}
+}
+
 func IntSequence(length int, from ...int) []int {
 	start := 0
 	if len(from) > 0 {
