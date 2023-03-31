@@ -13,8 +13,8 @@ func (s Set[C]) IsSubsetOf(super Set[C]) bool {
 	return true
 }
 
-func (s Set[C]) IsSupersetOf(super Set[C]) bool {
-	for elt, _ := range super {
+func (s Set[C]) IsSupersetOf(sub Set[C]) bool {
+	for elt, _ := range sub {
 		if !s.Contains(elt) {
 			return false
 		}
@@ -43,8 +43,10 @@ func (s Set[C]) Contains(elt C) bool {
 	return ok
 }
 
-func (s Set[C]) Add(elt C) Set[C] {
-	s[elt] = struct{}{}
+func (s Set[C]) Add(elts ...C) Set[C] {
+	for _, elt := range elts {
+		s[elt] = struct{}{}
+	}
 	return s
 }
 
@@ -92,6 +94,9 @@ func (s Set[C]) GetArbitraryElement() C {
 	}
 	panic(fmt.Errorf("requested element from an empty set"))
 }
+
+// No .Empty or .Len functions, as this can be done via the regular len(...) function.
+// .Equal can be done via reflect.DeepEqual()
 
 func Union[C comparable](set1 Set[C], set2 Set[C]) Set[C] {
 	result := Set[C]{}

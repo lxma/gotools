@@ -15,12 +15,3 @@ func GetIntegersInString(line string) []int {
 	}
 	return result
 }
-
-func Future[A any](f func() A) chan A {
-	ch := make(chan A, 1)
-	go func() {
-		ch <- f()
-		close(ch)
-	}()
-	return ch
-}
