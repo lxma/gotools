@@ -2,10 +2,12 @@ package gotools
 
 import "strconv"
 
+// Number should cover all types for which Go offers basic arithmetic operations
 type Number interface {
 	~int | ~int8 | ~int16 | ~int32 | ~int64 | ~float32 | ~float64
 }
 
+// Min returns the minimum of multiple given numbers. It returns 0 if no number is provided.
 func Min[N Number](nums ...N) N {
 	if len(nums) == 0 {
 		return 0
@@ -20,6 +22,7 @@ func Min[N Number](nums ...N) N {
 	}
 }
 
+// Max returns the maximum of multiple given numbers. It returns 0 if no number is provided.
 func Max[N Number](nums ...N) N {
 	if len(nums) == 0 {
 		return 0
@@ -34,6 +37,7 @@ func Max[N Number](nums ...N) N {
 	}
 }
 
+// StringToInt converts the given string to an integer. It panics if this is not possible.
 func StringToInt(st string) int {
 	result, err := strconv.Atoi(st)
 	if err != nil {
@@ -42,6 +46,7 @@ func StringToInt(st string) int {
 	return result
 }
 
+// Abs returns the absolute value of a number
 func Abs[N Number](n N) N {
 	if n < 0 {
 		return -n

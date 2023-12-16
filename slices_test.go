@@ -84,5 +84,5 @@ func TestTranspose(t *testing.T) {
 }
 
 func TestReduce(t *testing.T) {
-	assert.Equal(t, Reduce(func(a int, b int) int { return a + b }, 1, []int{2, 3, 4}), 10)
+	assert.Equal(t, 10, Reduce(func(a int, b int) int { return a + b }, 1, []int{2, 3, 4}))
 }

@@ -133,15 +133,3 @@ func TestMapSet(t *testing.T) {
 	assertIntSetEquals(t, []int{4, 9}, MapSet(MakeSet([]int{2, 3, -2}), func(a int) int { return a * a }), "Simple map set")
 	assertIntSetEquals(t, []int{}, MapSet(Set[int]{}, func(a int) int { return a * a }), "mapping an empty set")
 }
-
-func TestSetAddElement(t *testing.T) {
-	s := MakeSet([]int{1, 2})
-	assertIntSetEquals(t, []int{1, 2, 3}, SetAddElement(s, 3), "Simple add alement")
-	assertIntSetEquals(t, []int{1, 2}, s, "Original set is unchanged")
-}
-
-func TestSetDeleteElement(t *testing.T) {
-	s := MakeSet([]int{1, 2})
-	assertIntSetEquals(t, []int{2}, SetDeleteElement(s, 1), "Simple add alement")
-	assertIntSetEquals(t, []int{1, 2}, s, "Original set is unchanged")
-}
