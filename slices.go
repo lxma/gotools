@@ -107,7 +107,7 @@ func Remove[A any](slc []A, f func(A) bool) []A {
 }
 
 func Sum[N Number](slc []N) N {
-	var result N
+	result := N(0)
 	for _, val := range slc {
 		result += val
 	}
@@ -115,7 +115,7 @@ func Sum[N Number](slc []N) N {
 }
 
 func Prod[N Number](slc []N) N {
-	var result N = N(1)
+	result := N(1)
 	for _, val := range slc {
 		result *= val
 	}
@@ -134,4 +134,12 @@ func CopySlice[C any](slc []C) []C {
 	newSlice := make([]C, len(slc))
 	copy(newSlice, slc)
 	return newSlice
+}
+
+func Reduce[A any, B any](f func(A, B) A, startValue A, slc []B) A {
+	result := startValue
+	for _, v := range slc {
+		result = f(result, v)
+	}
+	return result
 }

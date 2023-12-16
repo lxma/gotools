@@ -82,3 +82,7 @@ func TestTranspose(t *testing.T) {
 		"simple transpose",
 	)
 }
+
+func TestReduce(t *testing.T) {
+	assert.Equal(t, Reduce(func(a int, b int) int { return a + b }, 1, []int{2, 3, 4}), 10)
+}

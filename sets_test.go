@@ -36,7 +36,8 @@ func TestSet_Contains(t *testing.T) {
 func TestSet_Add(t *testing.T) {
 	assertIntSetEquals(t, []int{1, 2}, MakeSet([]int{2}).Add(1), "simple add")
 	assertIntSetEquals(t, []int{1}, Set[int]{}.Add(1), "add to empty set")
-	assertIntSetEquals(t, []int{1, 2, 3}, MakeSet([]int{2}).Add(1, 2, 3), "simple add")
+	assertIntSetEquals(t, []int{1, 2, 3}, MakeSet([]int{2}).Add(1, 2, 3), "add multiple values")
+	assertIntSetEquals(t, []int{}, Set[int]{}.Add(), "add nothing to empty set")
 }
 
 func TestSet_AddSet(t *testing.T) {

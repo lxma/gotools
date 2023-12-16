@@ -9,19 +9,17 @@ import (
 
 func TestFuture(t *testing.T) {
 	start := time.Now()
-	fut1 := Future(func() int {
+	futureValue1 := Future(func() int {
 		time.Sleep(100 * time.Millisecond)
 		return 1
 	})
-	fut2 := Future(func() int {
+	futureValue2 := Future(func() int {
 		time.Sleep(100 * time.Millisecond)
 		return 2
 	})
-	value1 := fut1()
-	value2 := fut2()
+	assert.Equal(t, 1, futureValue1(), "value 1 is correct")
+	assert.Equal(t, 2, futureValue2(), "value 2 is correct")
 	duration := time.Since(start)
-	assert.Equal(t, 1, value1, "value 1 is correct")
-	assert.Equal(t, 2, value2, "value 2 is correct")
 	assert.Less(t, 90*time.Millisecond, duration, "needed to wait one execution time")
 	assert.Greater(t, 190*time.Millisecond, duration, "did not need to wait full execution time")
 }
