@@ -273,8 +273,8 @@ func Concat[A any](inputSlices ...[]A) []A {
 	result := make([]A, totalLength)
 	idx := 0
 	for _, slc := range inputSlices {
-		for _, val := range slc {
-			result[idx] = val
+		for _, value := range slc {
+			result[idx] = value
 			idx++
 		}
 	}
