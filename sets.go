@@ -56,7 +56,8 @@ func MakeSet[C comparable](input []C) Set[C] {
 	return result
 }
 
-// Copy copies a set. It copies only the set itself, not the values.
+// Copy copies a set. It copies only the set itself, not the values. (I.e., it does
+// /not/ perform a deep copy.)
 func (s Set[C]) Copy() Set[C] {
 	result := Set[C]{}
 	for elt, _ := range s {
@@ -77,11 +78,13 @@ func (s Set[C]) Contains(elt C) bool {
 }
 
 // Add adds one or more elements to a set. The set is altered and it is returned.
-// It's ok to add an existing element (the set is not changed).
+// It's ok to add an already existing element (the set is not changed).
 // Examples:
 //
 //	MakeSet([]int{1, 2, 3}).Add(4)
 //	MakeSet([]int{1, 2, 3}).Add(2,3,4,5)
+//
+// return {1,2,3,4} resp. {1,2,3,4,5}
 func (s Set[C]) Add(elts ...C) Set[C] {
 	for _, elt := range elts {
 		s[elt] = struct{}{}
@@ -93,16 +96,18 @@ func (s Set[C]) Add(elts ...C) Set[C] {
 // It's ok to delete an element that does not exist (the set is not changed).
 // Examples:
 //
-//	MakeSet([]int{1, 2, 3}).Delete(4)
+//	MakeSet([]int{1, 2, 3}).Delete(2)
+//
+// returns {1,3}
 func (s Set[C]) Delete(elt C) Set[C] {
 	delete(s, elt)
 	return s
 }
 
-// AddSet (similar to Union) adds elements from another set to a set.
+// AddSet (similar to [Union]) adds elements from another set to a set.
 // It alters and returns the given set.
 //
-//	MakeSet([]int{1, 2}).AddSet(MakeSet([]int{3, 4})
+//	MakeSet([]int{1, 2, 3}).AddSet(MakeSet([]int{3, 4})
 //
 // returns the set {1, 2, 3, 4}
 func (s Set[C]) AddSet(secondSet Set[C]) Set[C] {
@@ -112,7 +117,7 @@ func (s Set[C]) AddSet(secondSet Set[C]) Set[C] {
 	return s
 }
 
-// SubtractSet (similar to SetDifference) removes elements from another set to a set.
+// SubtractSet (similar to [SetDifference]) removes elements from another set to a set.
 // It alters and returns the given set.
 //
 //	MakeSet([]int{1, 2}).SubtractSet(MakeSet([]int{2, 3})
@@ -125,7 +130,7 @@ func (s Set[C]) SubtractSet(secondSet Set[C]) Set[C] {
 	return s
 }
 
-// Intersect (similar to Intersection) removes elements /not/ contained in another set.
+// Intersect (similar to [Intersection]) removes elements /not/ contained in another set.
 // It alters and returns the given set.
 //
 //	MakeSet([]int{1, 2}).Intersect(MakeSet([]int{2, 3})
@@ -170,7 +175,7 @@ func (s Set[C]) GetArbitraryElement() C {
 	panic(fmt.Errorf("requested element from an empty set"))
 }
 
-// Union (similar to .AddSet) returns the union of two sets. The original sets
+// Union (similar to [AddSet]) returns the union of two sets. The original sets
 // are not changed.
 // Example:
 //
@@ -188,7 +193,7 @@ func Union[C comparable](set1 Set[C], set2 Set[C]) Set[C] {
 	return result
 }
 
-// Intersection (similar to .Intersect) delivers the intersection of two sets. The original
+// Intersection (similar to [Intersect]) delivers the intersection of two sets. The original
 // sets are not changed.
 // Example:
 //
@@ -208,7 +213,7 @@ func Intersection[C comparable](set1 Set[C], set2 Set[C]) Set[C] {
 	return result
 }
 
-// SetDifference (similar to .SubtractSet) delivers the set difference of two sets.
+// SetDifference (similar to [SubtractSet]) delivers the set difference of two sets.
 // The original sets are not changed.
 // Example:
 //
@@ -226,12 +231,13 @@ func SetDifference[C comparable](set1 Set[C], set2 Set[C]) Set[C] {
 }
 
 // MapSet maps a function to all elements of a set. It returns a new set, containing all
-// function results.
+// function results. The new set might be smaller than the original set.
 // Example:
 //
 //	MapSet(MakeSet([]int{1, 2, 3}), func(a int) int { return 2 * a })
+//	MapSet(MakeSet([]int{-1, 0, 1}), Abs)
 //
-// returns {2, 4, 6}
+// return {2, 4, 6} resp. {0, 1}
 func MapSet[A comparable, B comparable](s Set[A], f func(A) B) Set[B] {
 	mappedSet := Set[B]{}
 	for elt := range s {

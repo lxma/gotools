@@ -257,3 +257,26 @@ func Reduce[A any, B any](f func(A, B) A, startValue A, slc []B) A {
 	}
 	return result
 }
+
+// Concat concatenates slices
+// Example:
+//
+//	Concat([]int{1,2,3}, []int{2,3}, []int{8})
+//
+// returns
+//
+//	[]int{1,2,3,2,3,8}
+func Concat[A any](inputSlices ...[]A) []A {
+	totalLength := Sum(Map(inputSlices, func(slc []A) int {
+		return len(slc)
+	}))
+	result := make([]A, totalLength)
+	idx := 0
+	for _, slc := range inputSlices {
+		for _, val := range slc {
+			result[idx] = val
+			idx++
+		}
+	}
+	return result
+}

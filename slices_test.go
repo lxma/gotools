@@ -86,3 +86,9 @@ func TestTranspose(t *testing.T) {
 func TestReduce(t *testing.T) {
 	assert.Equal(t, 10, Reduce(func(a int, b int) int { return a + b }, 1, []int{2, 3, 4}))
 }
+
+func TestConcat(t *testing.T) {
+	assert.Equal(t, []int{1, 2, 3, 2, 3, 8}, Concat([]int{1, 2, 3}, []int{}, []int{2, 3}, []int{8}))
+	emptySlcOfSlces := [][]int{}
+	assert.Equal(t, []int{}, Concat(emptySlcOfSlces...))
+}
