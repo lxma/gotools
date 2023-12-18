@@ -1,5 +1,7 @@
 package gotools
 
+import "sort"
+
 // TakeWhile returns the first elements of a slice for which a given function
 // returns true. Example:
 //
@@ -279,4 +281,22 @@ func Concat[A any](inputSlices ...[]A) []A {
 		}
 	}
 	return result
+}
+
+// SortBy (similar to [sort.Slice]) sorts elements in slice using a comparator (less) function.
+// The corresponding slice is altered and returned.
+func SortBy[A any](slc []A, less func(A, A) bool) []A {
+	sort.Slice(slc, func(i, j int) bool {
+		return less(slc[i], slc[j])
+	})
+	return slc
+}
+
+// SortStable (similar to [sort.SliceStable]) sorts elements in slice using a comparator (less) function.
+// The corresponding slice is altered and returned.
+func SortStable[A any](slc []A, less func(A, A) bool) []A {
+	sort.SliceStable(slc, func(i, j int) bool {
+		return less(slc[i], slc[j])
+	})
+	return slc
 }

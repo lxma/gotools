@@ -17,26 +17,26 @@ func GetIntegersInString(line string) []int {
 	return result
 }
 
-// Partial (similar to [PartialL] takes a function with two arguments and one (the first)
+// PartialR (similar to [PartialL] takes a function with two arguments and one (the first)
 // argument. It returns a function with only one argument. Example
 //
 //	func subtract(a int, b int) int { return a - b }
-//	subtractFromTen := Partial(subtract, 10)
+//	subtractFromTen := PartialR(subtract, 10)
 //
 // Now, subtractFromTen(3) returns 7. This is handy for mapping, e.g.:
 //
-//	Map([]int{1, 2, 3}, Partial(subtract, 10))
+//	Map([]int{1, 2, 3}, PartialR(subtract, 10))
 //
 // returns
 //
 //	[]int{9, 8, 7}
-func Partial[A any, B any, ResultType any](f func(A, B) ResultType, a A) func(B) ResultType {
+func PartialR[A any, B any, ResultType any](f func(A, B) ResultType, a A) func(B) ResultType {
 	return func(b B) ResultType {
 		return f(a, b)
 	}
 }
 
-// PartialL (similar to [Partial] takes a function with two arguments and one (the second)
+// PartialL (similar to [PartialR] takes a function with two arguments and one (the second)
 // argument. It returns a function with only one argument. Example
 //
 //	func add(a int, b int) int { return a + b }
@@ -56,20 +56,20 @@ func PartialL[A any, B any, ResultType any](f func(A, B) ResultType, b B) func(A
 	}
 }
 
-// Partial2 (similar to [Partial2L] takes a function with three arguments and the first two arguments.
+// Partial2R (similar to [Partial2L] takes a function with three arguments and the first two arguments.
 // It returns a function with only one argument. Example
 //
 //	func subtract2(a int, b int, c int) int { return a - b - c }
-//	f := Partial2(subtract2, 10, 2)
+//	f := Partial2R(subtract2, 10, 2)
 //
 // now, f(3) returns 5
-func Partial2[A any, B any, C any, ResultType any](f func(A, B, C) ResultType, a A, b B) func(C) ResultType {
+func Partial2R[A any, B any, C any, ResultType any](f func(A, B, C) ResultType, a A, b B) func(C) ResultType {
 	return func(c C) ResultType {
 		return f(a, b, c)
 	}
 }
 
-// Partial2L (similar to [Partial2] takes a function with three arguments and the last two arguments.
+// Partial2L (similar to [Partial2R] takes a function with three arguments and the last two arguments.
 // It returns a function with only one argument. Example
 //
 //	func subtract2(a int, b int, c int) int { return a - b - c }

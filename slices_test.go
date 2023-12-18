@@ -92,3 +92,12 @@ func TestConcat(t *testing.T) {
 	emptySlcOfSlces := [][]int{}
 	assert.Equal(t, []int{}, Concat(emptySlcOfSlces...))
 }
+
+func less(a, b int) bool { return a < b }
+
+func TestSort(t *testing.T) {
+	assert.Equal(t, []int{1, 2, 3}, SortBy([]int{3, 1, 2}, less))
+	assert.Equal(t, []int{}, SortBy([]int{}, less))
+	assert.Equal(t, []int{1, 2, 3}, SortStable([]int{3, 1, 2}, less))
+	assert.Equal(t, []int{}, SortStable([]int{}, less))
+}
