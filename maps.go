@@ -42,3 +42,35 @@ func MapHasKey[A comparable, B any](m map[A]B, key A) bool {
 	_, ok := m[key]
 	return ok
 }
+
+// GetKeys returns the keys of a map
+// Example:
+//
+//	GetKeys(map[int]string{1:"one", 2:"two"})
+//
+// returns (in undefined order!)
+//
+//	[]int{1, 2}
+func GetKeys[A comparable, B any](m map[A]B) []A {
+	result := make([]A, 0, len(m))
+	for key, _ := range m {
+		result = append(result, key)
+	}
+	return result
+}
+
+// GetValues returns the values of a map
+// Example:
+//
+//	GetValues(map[int]string{1:"one", 2:"two"})
+//
+// returns (in undefined order!)
+//
+//	[]string{"one", "two"}
+func GetValues[A comparable, B any](m map[A]B) []B {
+	result := make([]B, 0, len(m))
+	for _, value := range m {
+		result = append(result, value)
+	}
+	return result
+}
