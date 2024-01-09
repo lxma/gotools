@@ -1,4 +1,4 @@
-module github.com/lxma/gotools
+module github.com/lxma/gotools/v2
 
 // module version set via git, e.g.
 //     git tag v0.0.1
