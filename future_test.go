@@ -22,6 +22,7 @@ func TestFuture(t *testing.T) {
 	duration := time.Since(start)
 	assert.Less(t, 90*time.Millisecond, duration, "needed to wait one execution time")
 	assert.Greater(t, 190*time.Millisecond, duration, "did not need to wait full execution time")
+	assert.Equal(t, 1, futureValue1(), "value can be retrieved multiple times")
 }
 
 func TestFutureWithError(t *testing.T) {
@@ -58,6 +59,9 @@ func TestFutureWithError(t *testing.T) {
 	assert.Equal(t, []int{2, 3}, v3)
 	assert.Equal(t, nil, err3)
 	assert.Equal(t, "testerror", err4.Error())
+	v1, err1 = fut1()
+	assert.Equal(t, 2, v1, "value can be retrieved twice")
+	assert.Equal(t, nil, err1, "value can be retrieved twice")
 }
 
 func TestFutureWithOk(t *testing.T) {
@@ -94,4 +98,7 @@ func TestFutureWithOk(t *testing.T) {
 	assert.Equal(t, []int{2, 3}, v3)
 	assert.True(t, ok3)
 	assert.False(t, ok4)
+	v1, ok1 = fut1()
+	assert.Equal(t, 2, v1, "value can be retrieved twice")
+	assert.True(t, ok1, "value can be retrieved twice")
 }

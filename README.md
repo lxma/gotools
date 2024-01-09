@@ -25,3 +25,9 @@ One goal of this library is also to provide /simple/ functionality. You should h
 this library by yourself in case you find my support no-efficient.
 
 Still, the current state is sufficient for myself.
+
+# Incompatible Changes in Version 2
+- `Max()` and `Min()` have been removed. Instead, functions of the standard library `slices.Min()` and `slices.Max`
+  should be used for slices and the primitives `max` and `min` for single values.
+- `MakeSet()` now operates on single values instead of slices. I.e. `MakeSet([]int{1,2,3})` becomes `MakeSet(1,2,3)` and
+  `MakeSet(slc)` becomes `MakeSet(slc...)`.

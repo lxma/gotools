@@ -6,6 +6,11 @@ import (
 
 // Future executes a function f in background. It returns
 // a function that will wait for the result and returns it.
+//
+// The return value will be buffered, so the function can be
+// called multiple times. I.e. it can be treated as a regular
+// result and be passed around without worrying who calls it
+// first.
 // Example:
 //
 //	futureValue1 := Future(func() int {
@@ -52,21 +57,26 @@ type futureBufferWithOk struct {
 // FutureWithError (just like [Future] – but with additional error output)
 // executes a function f in background. It returns a function that will
 // wait for the result and returns it.
+//
+// The return value will be buffered, so the function can be
+// called multiple times. I.e. it can be treated as a regular
+// result and be passed around without worrying who calls it
+// first.
 func FutureWithError[A any](f func() (A, error)) func() (A, error) {
-	ch := make(chan futureBufferWithError)
+	c := make(chan futureBufferWithError)
 	m := sync.Mutex{}
 	haveResult := false
 	var bufferedResult futureBufferWithError
 	go func() {
 		val, err := f()
-		ch <- futureBufferWithError{val, err}
-		close(ch)
+		c <- futureBufferWithError{val, err}
+		close(c)
 	}()
 	return func() (A, error) {
 		m.Lock()
 		defer m.Unlock()
 		if !haveResult {
-			bufferedResult = <-ch
+			bufferedResult = <-c
 			haveResult = true
 		}
 		return bufferedResult.value.(A), bufferedResult.error
@@ -76,21 +86,26 @@ func FutureWithError[A any](f func() (A, error)) func() (A, error) {
 // FutureWithOk (just like [Future] – but with additional ok output)
 // executes a function f in background. It returns a function that will
 // wait for the result and returns it.
+//
+// The return value will be buffered, so the function can be
+// called multiple times. I.e. it can be treated as a regular
+// result and be passed around without worrying who calls it
+// first.
 func FutureWithOk[A any](f func() (A, bool)) func() (A, bool) {
-	ch := make(chan futureBufferWithOk)
+	c := make(chan futureBufferWithOk)
 	m := sync.Mutex{}
 	haveResult := false
 	var bufferedResult futureBufferWithOk
 	go func() {
 		val, ok := f()
-		ch <- futureBufferWithOk{val, ok}
-		close(ch)
+		c <- futureBufferWithOk{val, ok}
+		close(c)
 	}()
 	return func() (A, bool) {
 		m.Lock()
 		defer m.Unlock()
 		if !haveResult {
-			bufferedResult = <-ch
+			bufferedResult = <-c
 			haveResult = true
 		}
 		return bufferedResult.value.(A), bufferedResult.ok

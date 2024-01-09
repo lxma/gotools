@@ -1,40 +1,17 @@
 package gotools
 
-import "strconv"
+import (
+	"math/big"
+	"strconv"
+)
 
 // Number should cover all types for which Go offers basic arithmetic operations
 type Number interface {
 	~int | ~int8 | ~int16 | ~int32 | ~int64 | ~float32 | ~float64
 }
 
-// Min returns the minimum of multiple given numbers. It returns 0 if no number is provided.
-func Min[N Number](nums ...N) N {
-	if len(nums) == 0 {
-		return 0
-	} else {
-		min := nums[0]
-		for i := 1; i < len(nums); i++ {
-			if nums[i] < min {
-				min = nums[i]
-			}
-		}
-		return min
-	}
-}
-
-// Max returns the maximum of multiple given numbers. It returns 0 if no number is provided.
-func Max[N Number](nums ...N) N {
-	if len(nums) == 0 {
-		return 0
-	} else {
-		max := nums[0]
-		for i := 1; i < len(nums); i++ {
-			if nums[i] > max {
-				max = nums[i]
-			}
-		}
-		return max
-	}
+type Integer interface {
+	~int | ~int8 | ~int16 | ~int32 | ~int64
 }
 
 // StringToInt converts the given string to an integer. It panics if this is not possible.
@@ -53,4 +30,53 @@ func Abs[N Number](n N) N {
 	} else {
 		return n
 	}
+}
+
+// BigInt creates a big integer from any given integer type. That's how
+// [big.NewInt] ought to be typed.
+func BigInt[I Integer](n I) *big.Int {
+	return big.NewInt(int64(n))
+}
+
+// GCD returns the greatest common divisor of two integers.
+func GCD[I Integer](a, b I) I {
+	if a < b {
+		return GCD(b, a)
+	} else {
+		c := a % b
+		if c == 0 {
+			return b
+		} else {
+			return GCD(b, c)
+		}
+	}
+}
+
+// LCM returns the least common multiple of two integers
+func LCM[I Integer](a, b I) I {
+	return a / GCD(a, b) * b
+}
+
+// BigGCD returns the greatest common divisor of two [big.Int] variables.
+func BigGCD(a, b *big.Int) *big.Int {
+	if a.Cmp(b) == -1 {
+		return BigGCD(b, a)
+	} else {
+		c := big.NewInt(0)
+		c.Mod(a, b)
+		if c.Cmp(big.NewInt(0)) == 0 {
+			return b
+		} else {
+			return BigGCD(b, c)
+		}
+	}
+}
+
+// BigLCM returns the least common multiple of two [big.Int] variables
+func BigLCM(a, b *big.Int) *big.Int {
+	result := new(big.Int)
+	result.Set(a)
+	result.Div(result, BigGCD(a, b))
+	result.Mul(result, b)
+	return result
 }
