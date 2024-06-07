@@ -1,6 +1,7 @@
 package gotools
 
 import (
+	"fmt"
 	"regexp"
 	"strconv"
 )
@@ -79,5 +80,53 @@ func Partial2R[A any, B any, C any, ResultType any](f func(A, B, C) ResultType, 
 func Partial2L[A any, B any, C any, ResultType any](f func(A, B, C) ResultType, b B, c C) func(A) ResultType {
 	return func(a A) ResultType {
 		return f(a, b, c)
+	}
+}
+
+// Ternary is a weak substitute for the missing ternary operator. I consider it as an act of self-defense
+// from strange language lawyers that think that
+//
+//	var x int
+//	if useOne {
+//	   x = 1
+//	} else {
+//	   x = 0
+//	}
+//
+// is better readable than
+//
+//	x = useOne ? 1 : 0
+func Ternary[A any](condition bool, trueVal A, falseVal A) A {
+	if condition {
+		return trueVal
+	} else {
+		return falseVal
+	}
+}
+
+// Assert panics if a condition is not met. It should be used to signal a situation
+// that cannot occur. (So, if the situation occurs, there is a bug in the program
+// logic itself.)
+func Assert(condition bool, parameters ...any) {
+	if !condition {
+		message := fmt.Errorf("unexpected assert failure")
+		if len(parameters) > 0 {
+			message = fmt.Errorf(parameters[0].(string), parameters[1:]...)
+		}
+		panic(message)
+	}
+}
+
+// Assume behaves technically like assert. The difference is the semantic. Assume should be
+// used when you – during dirty programming – assume a situation should not appear and you
+// avoid proper error handling. In case this is violated, you search for different types of
+// errors. Also, you should replace assumes with proper error handling before going productive.
+func Assume(condition bool, parameters ...any) {
+	if !condition {
+		message := fmt.Errorf("unexpected wrong assumtion")
+		if len(parameters) > 0 {
+			message = fmt.Errorf(parameters[0].(string), parameters[1:]...)
+		}
+		panic(message)
 	}
 }
