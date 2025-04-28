@@ -59,6 +59,21 @@ func ReadBytes(filename string) ([]byte, error) {
     return contents, nil
 }
 
+// WriteBytes writes binary content to a file.
+func WriteBytes(filename string, content []byte) error {
+    f, err := os.Create(filename)
+    if err != nil {
+        return err
+    }
+    defer f.Close()
+
+    _, err = f.Write(content)
+    if err != nil {
+        return err
+    }
+    return nil
+}
+
 // WriteLines writes a slice of stings as text file
 func WriteLines(filename string, lines []string) {
     file, err := os.Create(filename)
