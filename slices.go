@@ -1,6 +1,9 @@
 package gotools
 
-import "sort"
+import (
+    "math/rand"
+    "sort"
+)
 
 // TakeWhile returns the first elements of a slice for which a given function
 // returns true. Example:
@@ -445,6 +448,20 @@ func RangeFromTo(from, to int) []int {
     result := make([]int, to-from)
     for i := 0; i < to-from; i++ {
         result[i] = from + i
+    }
+    return result
+}
+
+// Randomize returns a slice containing the values of the original slice
+// in random order.
+func Randomize[T any](slice []T) []T {
+    result := make([]T, len(slice))
+    copy(result, slice)
+    for i := 1; i < len(result); i++ {
+        j := rand.Intn(len(result))
+        if i != j {
+            result[i], result[j] = result[j], result[i]
+        }
     }
     return result
 }

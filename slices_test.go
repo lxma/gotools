@@ -1,7 +1,10 @@
 package gotools
 
 import (
+    "cmp"
     "github.com/stretchr/testify/assert"
+    "reflect"
+    "slices"
     "testing"
 )
 
@@ -178,4 +181,46 @@ func TestRangeFromTo(t *testing.T) {
     assert.Equal(t, []int{}, RangeFromTo(0, 0))
     assert.Panics(t, func() { RangeFromTo(2, 1) }, "To must be greater or equal than from")
     assert.Equal(t, []int{-2, -1, 0, 1, 2}, RangeFromTo(-2, 3))
+}
+
+func CheckRandomized[T cmp.Ordered](t *testing.T, slice []T, msg string) {
+    changedOrderOrSmall := len(slice) < 2
+    for i := 0; i < 10000; i++ {
+        randomized := Randomize(slice)
+        if !reflect.DeepEqual(randomized, slice) {
+            changedOrderOrSmall = true
+        }
+        slices.Sort(randomized)
+        assert.Equal(t, randomized, slice, msg)
+        if changedOrderOrSmall {
+            break
+        }
+    }
+    assert.True(t, changedOrderOrSmall, "At some point, the order must be changed")
+}
+
+func TestRandomize(t *testing.T) {
+    originalSlice1 := []int{1, 2}
+    matchOriginal := false
+    matchOpposite := false
+    for i := 0; i < 10000; i++ {
+        randomSlice := Randomize(originalSlice1)
+        if reflect.DeepEqual(originalSlice1, randomSlice) {
+            matchOriginal = true
+        } else if reflect.DeepEqual([]int{2, 1}, randomSlice) {
+            matchOpposite = true
+        } else {
+            assert.Fail(t, "Randomize should retain the original values in /some/ order")
+        }
+        if matchOriginal && matchOpposite {
+            break
+        }
+    }
+    assert.True(t, matchOriginal, "Sometimes the original order should be retained")
+    assert.True(t, matchOpposite, "Sometimes the order should be changed")
+
+    CheckRandomized(t, []int{}, "Empty slice must be randomizable")
+    CheckRandomized(t, []string{"x"}, "Empty slice must be randomizable")
+    CheckRandomized(t, []int{1, 2, 2, 3, 4}, "Multiple identical values should be possible")
+    CheckRandomized(t, []string{"a", "b", "b", "cd", "e"}, "Strings should be possible")
 }
