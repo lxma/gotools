@@ -2,7 +2,6 @@ package gotools
 
 import (
     "cmp"
-    "fmt"
     "github.com/stretchr/testify/assert"
     "reflect"
     "slices"
@@ -250,5 +249,4 @@ func TestRandomize(t *testing.T) {
             assert.Fail(t, "", "Randomize should give all alternatives about equal probability (but alternative %d got %.1f%% instead of 16.7%%).", i, float64(counts[i]*100)/float64(expectedCounts*6))
         }
     }
-    fmt.Println(counts)
 }
