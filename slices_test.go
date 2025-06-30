@@ -2,6 +2,7 @@ package gotools
 
 import (
     "cmp"
+    "fmt"
     "github.com/stretchr/testify/assert"
     "reflect"
     "slices"
@@ -223,4 +224,31 @@ func TestRandomize(t *testing.T) {
     CheckRandomized(t, []string{"x"}, "Empty slice must be randomizable")
     CheckRandomized(t, []int{1, 2, 2, 3, 4}, "Multiple identical values should be possible")
     CheckRandomized(t, []string{"a", "b", "b", "cd", "e"}, "Strings should be possible")
+
+    counts := [6]int{0, 0, 0, 0, 0, 0}
+    expectedCounts := 5000
+    for i := 0; i < expectedCounts*6; i++ {
+        rnd := Randomize([]int{1, 2, 3})
+        if reflect.DeepEqual(rnd, []int{1, 2, 3}) {
+            counts[0]++
+        } else if reflect.DeepEqual(rnd, []int{1, 3, 2}) {
+            counts[1]++
+        } else if reflect.DeepEqual(rnd, []int{2, 1, 3}) {
+            counts[2]++
+        } else if reflect.DeepEqual(rnd, []int{2, 3, 1}) {
+            counts[3]++
+        } else if reflect.DeepEqual(rnd, []int{3, 1, 2}) {
+            counts[4]++
+        } else if reflect.DeepEqual(rnd, []int{3, 2, 1}) {
+            counts[5]++
+        } else {
+            assert.Fail(t, "Randomize should retain the original values in /some/ order")
+        }
+    }
+    for i := 0; i < 6; i++ {
+        if Abs(expectedCounts-counts[i]) > expectedCounts/20 {
+            assert.Fail(t, "", "Randomize should give all alternatives about equal probability (but alternative %d got %.1f%% instead of 16.7%%).", i, float64(counts[i]*100)/float64(expectedCounts*6))
+        }
+    }
+    fmt.Println(counts)
 }

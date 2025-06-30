@@ -457,10 +457,10 @@ func RangeFromTo(from, to int) []int {
 func Randomize[T any](slice []T) []T {
     result := make([]T, len(slice))
     copy(result, slice)
-    for i := 1; i < len(result); i++ {
-        j := rand.Intn(len(result))
-        if i != j {
-            result[i], result[j] = result[j], result[i]
+    for i := 0; i < len(result)-1; i++ {
+        j := rand.Intn(len(result) - i)
+        if j != 0 {
+            result[i], result[i+j] = result[i+j], result[i]
         }
     }
     return result
