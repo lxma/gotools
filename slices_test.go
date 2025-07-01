@@ -281,4 +281,14 @@ func TestPermutationsIter(t *testing.T) {
     assert.Equal(t, [][]int{{1, 2}, {2, 1}}, collectPermutations([]int{1, 2}))
     assert.Equal(t, [][]int{}, collectPermutations([]int{}))
     assert.Equal(t, [][]int{{1}}, collectPermutations([]int{1}))
+
+    count := 0
+    for perm := range PermutationsIter([]int{1, 2, 3, 4}) {
+        assert.Equal(t, 4, len(perm))
+        count++
+        if count == 2 {
+            break
+        }
+    }
+    assert.Equal(t, 2, count, "Permutations iteration can be interrupted")
 }

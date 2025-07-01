@@ -1,6 +1,9 @@
 package gotools
 
-import "fmt"
+import (
+    "fmt"
+    "iter"
+)
 
 // Set is a set of objects in the mathematical sense. I.e. it is
 // unsorted and can contain each element only once. It provides
@@ -20,7 +23,7 @@ type Set[C comparable] map[C]struct{}
 //
 // returns true
 func (s Set[C]) IsSubsetOf(super Set[C]) bool {
-    for elt, _ := range s {
+    for elt := range s {
         if !super.Contains(elt) {
             return false
         }
@@ -35,7 +38,7 @@ func (s Set[C]) IsSubsetOf(super Set[C]) bool {
 //
 // returns true
 func (s Set[C]) IsSupersetOf(sub Set[C]) bool {
-    for elt, _ := range sub {
+    for elt := range sub {
         if !s.Contains(elt) {
             return false
         }
@@ -56,11 +59,33 @@ func MakeSet[C comparable](input ...C) Set[C] {
     return result
 }
 
+func (s Set[C]) Len() int {
+    return len(s)
+}
+
+// Iter returns an iterator to loop across the elements of the set.
+// Example:
+//
+//   for i := range MakeSet(1,2,1).Iter() {
+//        fmt.Println(i)
+//   }
+//
+// will print the numbers 1 and 2 (in arbitrary order).
+func (s Set[C]) Iter() iter.Seq[C] {
+    return func(yield func(C) bool) {
+        for elt := range s {
+            if !yield(elt) {
+                return
+            }
+        }
+    }
+}
+
 // Copy copies a set. It copies only the set itself, not the values. (I.e., it does
 // /not/ perform a deep copy.)
 func (s Set[C]) Copy() Set[C] {
     result := Set[C]{}
-    for elt, _ := range s {
+    for elt := range s {
         result.Add(elt)
     }
     return result
@@ -111,7 +136,7 @@ func (s Set[C]) Delete(elt C) Set[C] {
 //
 // returns the set {1, 2, 3, 4}
 func (s Set[C]) AddSet(secondSet Set[C]) Set[C] {
-    for key, _ := range secondSet {
+    for key := range secondSet {
         s[key] = struct{}{}
     }
     return s
@@ -124,7 +149,7 @@ func (s Set[C]) AddSet(secondSet Set[C]) Set[C] {
 //
 // returns the set {1}
 func (s Set[C]) SubtractSet(secondSet Set[C]) Set[C] {
-    for key, _ := range secondSet {
+    for key := range secondSet {
         delete(s, key)
     }
     return s
@@ -137,7 +162,7 @@ func (s Set[C]) SubtractSet(secondSet Set[C]) Set[C] {
 //
 // returns the set {2}
 func (s Set[C]) Intersect(secondSet Set[C]) Set[C] {
-    for key, _ := range s {
+    for key := range s {
         if !secondSet.Contains(key) {
             delete(s, key)
         }
@@ -154,7 +179,7 @@ func (s Set[C]) Intersect(secondSet Set[C]) Set[C] {
 func (s Set[C]) ToSlice() []C {
     slice := make([]C, len(s))
     i := 0
-    for elt, _ := range s {
+    for elt := range s {
         slice[i] = elt
         i++
     }
@@ -169,7 +194,7 @@ func (s Set[C]) ToSlice() []C {
 //
 // returns 1 or 2
 func (s Set[C]) GetArbitraryElement() C {
-    for elt, _ := range s {
+    for elt := range s {
         return elt
     }
     panic(fmt.Errorf("requested element from an empty set"))
@@ -184,10 +209,10 @@ func (s Set[C]) GetArbitraryElement() C {
 // returns {1,2,3}
 func Union[C comparable](set1 Set[C], set2 Set[C]) Set[C] {
     result := Set[C]{}
-    for key, _ := range set1 {
+    for key := range set1 {
         result[key] = struct{}{}
     }
-    for key, _ := range set2 {
+    for key := range set2 {
         result[key] = struct{}{}
     }
     return result
@@ -202,10 +227,10 @@ func Union[C comparable](set1 Set[C], set2 Set[C]) Set[C] {
 // returns {2}
 func Intersection[C comparable](set1 Set[C], set2 Set[C]) Set[C] {
     if len(set1) > len(set2) {
-        return Intersection(set2, set1)
+        return Intersection[C](set2, set1)
     }
     result := Set[C]{}
-    for key, _ := range set1 {
+    for key := range set1 {
         if set2.Contains(key) {
             result[key] = struct{}{}
         }
@@ -222,7 +247,7 @@ func Intersection[C comparable](set1 Set[C], set2 Set[C]) Set[C] {
 // returns {1}
 func SetDifference[C comparable](set1 Set[C], set2 Set[C]) Set[C] {
     result := Set[C]{}
-    for key, _ := range set1 {
+    for key := range set1 {
         if !set2.Contains(key) {
             result[key] = struct{}{}
         }
@@ -252,7 +277,7 @@ func MapSet[A comparable, B comparable](s Set[A], f func(A) B) Set[B] {
 //	MakeSet(2, 0, 4).Every(func(n int) bool { return n > 1 }) // returns false
 //	MakeSet[int]().Every(func(n int) bool { return n > 1 })   // returns true
 func (s Set[C]) Every(pred func(C) bool) bool {
-    for value, _ := range s {
+    for value := range s {
         if !pred(value) {
             return false
         }
@@ -266,7 +291,7 @@ func (s Set[C]) Every(pred func(C) bool) bool {
 //	MakeSet(2, 0, 4).Every(func(n int) bool { return n > 1 }) // returns true
 //	MakeSet[int]().Every(func(n int) bool { return n > 1 })   // returns false
 func (s Set[C]) Some(pred func(C) bool) bool {
-    for value, _ := range s {
+    for value := range s {
         if pred(value) {
             return true
         }

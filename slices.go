@@ -2,7 +2,6 @@ package gotools
 
 import (
     "cmp"
-    "fmt"
     "github.com/lxma/golist/v2"
     "iter"
     "math/big"
@@ -500,15 +499,7 @@ func SortedLex[T cmp.Ordered](slice [][]T) [][]T {
     return slc
 }
 
-func factorial(n int) int {
-    Assert(n <= 20)
-    result := 1
-    for i := 1; i <= n; i++ {
-        result *= i
-    }
-    return result
-}
-
+// bigFactorial returns the nth factorial using big ints.
 func bigFactorial(n *big.Int) *big.Int {
     if n.Cmp(big.NewInt(0)) == 0 {
         return big.NewInt(0)
@@ -562,14 +553,14 @@ func nthPermutationOf[T any](slice []T, n *big.Int) []T {
 // returns [][]int{{1,2,3}, {1,3,2}, {2,1,3}, {2,3,1}, {3,1,2}, {3,2,1}}
 // (in no specific order).
 func Permutations[T any](slice []T) [][]T {
-    Assert(len(slice) <= 20, "Cannot make permutations with huge slices")
     if len(slice) == 0 {
         return [][]T{}
     }
-    numPermutations := factorial(len(slice))
-    result := make([][]T, numPermutations)
-    for i := 0; i < numPermutations; i++ {
-        result[i] = nthPermutationOf(slice, big.NewInt(int64(i)))
+    numPermutations := bigFactorial(big.NewInt(int64(len(slice))))
+    Assert(numPermutations.IsInt64())
+    result := make([][]T, numPermutations.Int64())
+    for i := big.NewInt(0); i.Cmp(numPermutations) < 0; i.Add(i, big.NewInt(1)) {
+        result[i.Int64()] = nthPermutationOf(slice, i)
     }
     return result
 }
@@ -586,7 +577,6 @@ func PermutationsIter[T any](slice []T) iter.Seq[[]T] {
     numPermutations := bigFactorial(big.NewInt(int64(len(slice))))
     return func(yield func(perm []T) bool) {
         for i := big.NewInt(0); i.Cmp(numPermutations) < 0; i.Add(i, big.NewInt(1)) {
-            fmt.Printf("Perm: %d\n", i.Int64())
             if !yield(nthPermutationOf(slice, i)) {
                 return
             }
