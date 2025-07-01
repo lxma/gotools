@@ -250,3 +250,35 @@ func TestRandomize(t *testing.T) {
         }
     }
 }
+
+func TestSortLexicographic(t *testing.T) {
+    assert.Equal(t, [][]int{{1, 2}, {2, 1}}, SortedLex([][]int{{2, 1}, {1, 2}}))
+    assert.Equal(t, [][]int{}, SortedLex([][]int{}), "Sort empty slice")
+    assert.Equal(t, [][]int{{1}, {1, 2}}, SortedLex([][]int{{1, 2}, {1}}), "Sort slices of different length")
+    assert.Equal(t, [][]int{{1}, {1, 2}, {2}}, SortedLex([][]int{{1}, {2}, {1, 2}}), "Sort slices of different length 2")
+    assert.Equal(t, [][]string{{"a"}, {"a", "b"}}, SortedLex([][]string{{"a", "b"}, {"a"}}), "Sorting slices of slices of strings")
+}
+
+func TestPermutations(t *testing.T) {
+    perms := Permutations([]int{1, 2, 3})
+    SortLex(perms)
+    assert.Equal(t, [][]int{{1, 2, 3}, {1, 3, 2}, {2, 1, 3}, {2, 3, 1}, {3, 1, 2}, {3, 2, 1}}, perms)
+
+    assert.Equal(t, [][]int{}, Permutations([]int{}), "Empty slice")
+    assert.Equal(t, [][]int{{1}}, Permutations([]int{1}), "Empty slice")
+}
+
+func collectPermutations[T cmp.Ordered](slc []T) [][]T {
+    allPerms := make([][]T, 0)
+    for perm := range PermutationsIter(slc) {
+        allPerms = append(allPerms, perm)
+    }
+    SortLex(allPerms)
+    return allPerms
+}
+
+func TestPermutationsIter(t *testing.T) {
+    assert.Equal(t, [][]int{{1, 2}, {2, 1}}, collectPermutations([]int{1, 2}))
+    assert.Equal(t, [][]int{}, collectPermutations([]int{}))
+    assert.Equal(t, [][]int{{1}}, collectPermutations([]int{1}))
+}

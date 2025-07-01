@@ -1,6 +1,11 @@
 package gotools
 
 import (
+    "cmp"
+    "fmt"
+    "github.com/lxma/golist/v2"
+    "iter"
+    "math/big"
     "math/rand"
     "sort"
 )
@@ -464,4 +469,127 @@ func Randomize[T any](slice []T) []T {
         }
     }
     return result
+}
+
+// SortLex takes a slice of slices and sorts it in lexicographic
+// order.
+func SortLex[T cmp.Ordered](slice [][]T) {
+    sort.Slice(slice, func(i, k int) bool {
+        return lessSlices(slice[i], slice[k])
+    })
+}
+
+func lessSlices[T cmp.Ordered](a, b []T) bool {
+    for n := 0; n < len(a); n++ {
+        if n >= len(b) {
+            return false
+        } else if cmp.Less(a[n], b[n]) {
+            return true
+        } else if cmp.Less(b[n], a[n]) {
+            return false
+        }
+    }
+    return len(a) < len(b)
+}
+
+// SortedLex copies a slice of slices, sorts it in lexicographic
+// order and returns it.
+func SortedLex[T cmp.Ordered](slice [][]T) [][]T {
+    slc := CopySlice(slice)
+    SortLex(slc)
+    return slc
+}
+
+func factorial(n int) int {
+    Assert(n <= 20)
+    result := 1
+    for i := 1; i <= n; i++ {
+        result *= i
+    }
+    return result
+}
+
+func bigFactorial(n *big.Int) *big.Int {
+    if n.Cmp(big.NewInt(0)) == 0 {
+        return big.NewInt(0)
+    }
+    result := big.NewInt(1)
+    for i := big.NewInt(1); i.Cmp(n) <= 0; i.Add(i, big.NewInt(1)) {
+        result.Mul(result, i)
+    }
+    return result
+}
+
+// popNthElt allocates the nth element of the list, removes that element
+// and returns its value.
+func popNthElt[T any](lst *golist.List[T], n int) T {
+    val := lst.Front()
+    for n > 0 {
+        val = val.Next()
+        n--
+    }
+    lst.Remove(val)
+    return val.Value()
+}
+
+// nthPermutationOf returns the nth permutation of a slice.
+//
+// Generally, There are len(slice)! different permutations of the slice.
+// nthPermutationOf can be called with indices from 0 to len(slice)!-1
+// each returning a different permutation of slice.
+func nthPermutationOf[T any](slice []T, n *big.Int) []T {
+    idxsList := golist.MakeList(Range(len(slice))...)
+    rest := new(big.Int)
+    rest.Set(n)
+    idxs := make([]int, len(slice))
+    var idx *big.Int
+    for i := len(slice); i > 0; i-- {
+        rest, idx = rest.DivMod(rest, big.NewInt(int64(i)), big.NewInt(0))
+        idxs[len(slice)-i] = popNthElt(idxsList, int(idx.Int64()))
+    }
+    result := make([]T, len(slice))
+    for i, idx := range idxs {
+        result[i] = slice[idx]
+    }
+    return result
+}
+
+// Permutations takes a slice of values and returns a slice of slices
+// containing each possible permutation. Example:
+//
+//  Permutations([]int{1,2,3})
+//
+// returns [][]int{{1,2,3}, {1,3,2}, {2,1,3}, {2,3,1}, {3,1,2}, {3,2,1}}
+// (in no specific order).
+func Permutations[T any](slice []T) [][]T {
+    Assert(len(slice) <= 20, "Cannot make permutations with huge slices")
+    if len(slice) == 0 {
+        return [][]T{}
+    }
+    numPermutations := factorial(len(slice))
+    result := make([][]T, numPermutations)
+    for i := 0; i < numPermutations; i++ {
+        result[i] = nthPermutationOf(slice, big.NewInt(int64(i)))
+    }
+    return result
+}
+
+// PermutationsIter takes a slice of values and returns an iterator to loop across
+// all iterations of elements of that slice. Example:
+//
+//  for perm := range PermutationsIter([]int{1,2}) {
+//      fmt.Println(perm)
+//  }
+//
+// prints []int{1,2} and []int{2,1} (in arbitrary order).
+func PermutationsIter[T any](slice []T) iter.Seq[[]T] {
+    numPermutations := bigFactorial(big.NewInt(int64(len(slice))))
+    return func(yield func(perm []T) bool) {
+        for i := big.NewInt(0); i.Cmp(numPermutations) < 0; i.Add(i, big.NewInt(1)) {
+            fmt.Printf("Perm: %d\n", i.Int64())
+            if !yield(nthPermutationOf(slice, i)) {
+                return
+            }
+        }
+    }
 }
