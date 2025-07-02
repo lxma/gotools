@@ -2,7 +2,6 @@ package gotools
 
 import (
     "cmp"
-    "fmt"
     "github.com/lxma/golist/v2"
     "iter"
     "math/big"
@@ -506,6 +505,7 @@ func SortedLex[T cmp.Ordered](slice [][]T) [][]T {
     return slc
 }
 
+// bigFactorial returns the nth factorial using big ints.
 func bigFactorial(n *big.Int) *big.Int {
     if n.Cmp(big.NewInt(0)) == 0 {
         return big.NewInt(0)
@@ -584,7 +584,6 @@ func PermutationsIter[T any](slice []T) iter.Seq[[]T] {
     numPermutations := bigFactorial(big.NewInt(int64(len(slice))))
     return func(yield func(perm []T) bool) {
         for i := big.NewInt(0); i.Cmp(numPermutations) < 0; i.Add(i, big.NewInt(1)) {
-            fmt.Printf("Perm: %d\n", i.Int64())
             if !yield(nthPermutationOf(slice, i)) {
                 return
             }

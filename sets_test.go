@@ -1,7 +1,9 @@
 package gotools
 
 import (
+    "cmp"
     "github.com/stretchr/testify/assert"
+    "slices"
     "sort"
     "testing"
 )
@@ -141,4 +143,34 @@ func TestSet_Some_Every(t *testing.T) {
     assert.Equal(t, true, MakeSet(2, 3, 4).Every(func(n int) bool { return n > 1 }))
     assert.Equal(t, false, MakeSet(2, 0, 4).Every(func(n int) bool { return n > 1 }))
     assert.Equal(t, true, MakeSet[int]().Every(func(n int) bool { return n > 1 }))
+}
+
+func collectSet[C cmp.Ordered](s Set[C], n int) []C {
+    result := make([]C, min(len(s), n))
+    i := 0
+    for elt := range s.Iter() {
+        if i == n {
+            break
+        }
+        result[i] = elt
+        i++
+    }
+    slices.Sort(result)
+    return result
+}
+
+func TestSet_Iter(t *testing.T) {
+    assert.Equal(t, []int{1, 2, 4}, collectSet(MakeSet(1, 2, 4, 2), 100))
+    assert.Equal(t, 2, len(collectSet(MakeSet(1, 2, 4, 3), 2)), "ensure break works")
+    assert.Equal(t, []int{1}, collectSet(MakeSet(1), 100))
+    assert.Equal(t, []int{}, collectSet(MakeSet[int](), 100))
+    assert.Equal(t, []string{"a", "ab"}, collectSet(MakeSet("ab", "a"), 100))
+}
+
+func TestSet_Len(t *testing.T) {
+    assert.Equal(t, 2, MakeSet(1, 2).Len())
+    assert.Equal(t, 0, MakeSet[int]().Len())
+    var nilSet Set[int]
+    assert.Equal(t, 0, nilSet.Len())
+    assert.Equal(t, 3, MakeSet("a", "b", "c").Len())
 }
