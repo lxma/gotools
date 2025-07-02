@@ -186,7 +186,7 @@ func TestRangeFromTo(t *testing.T) {
 func CheckRandomized[T cmp.Ordered](t *testing.T, slice []T, msg string) {
     changedOrderOrSmall := len(slice) < 2
     for i := 0; i < 10000; i++ {
-        randomized := Randomize(slice)
+        randomized := Randomized(slice)
         if !reflect.DeepEqual(randomized, slice) {
             changedOrderOrSmall = true
         }
@@ -204,13 +204,13 @@ func TestRandomize(t *testing.T) {
     matchOriginal := false
     matchOpposite := false
     for i := 0; i < 10000; i++ {
-        randomSlice := Randomize(originalSlice1)
+        randomSlice := Randomized(originalSlice1)
         if reflect.DeepEqual(originalSlice1, randomSlice) {
             matchOriginal = true
         } else if reflect.DeepEqual([]int{2, 1}, randomSlice) {
             matchOpposite = true
         } else {
-            assert.Fail(t, "Randomize should retain the original values in /some/ order")
+            assert.Fail(t, "Randomized should retain the original values in /some/ order")
         }
         if matchOriginal && matchOpposite {
             break
@@ -227,7 +227,7 @@ func TestRandomize(t *testing.T) {
     counts := [6]int{0, 0, 0, 0, 0, 0}
     expectedCounts := 5000
     for i := 0; i < expectedCounts*6; i++ {
-        rnd := Randomize([]int{1, 2, 3})
+        rnd := Randomized([]int{1, 2, 3})
         if reflect.DeepEqual(rnd, []int{1, 2, 3}) {
             counts[0]++
         } else if reflect.DeepEqual(rnd, []int{1, 3, 2}) {
@@ -241,12 +241,12 @@ func TestRandomize(t *testing.T) {
         } else if reflect.DeepEqual(rnd, []int{3, 2, 1}) {
             counts[5]++
         } else {
-            assert.Fail(t, "Randomize should retain the original values in /some/ order")
+            assert.Fail(t, "Randomized should retain the original values in /some/ order")
         }
     }
     for i := 0; i < 6; i++ {
         if Abs(expectedCounts-counts[i]) > expectedCounts/20 {
-            assert.Fail(t, "", "Randomize should give all alternatives about equal probability (but alternative %d got %.1f%% instead of 16.7%%).", i, float64(counts[i]*100)/float64(expectedCounts*6))
+            assert.Fail(t, "", "Randomized should give all alternatives about equal probability (but alternative %d got %.1f%% instead of 16.7%%).", i, float64(counts[i]*100)/float64(expectedCounts*6))
         }
     }
 }

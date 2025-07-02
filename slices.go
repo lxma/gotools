@@ -457,17 +457,23 @@ func RangeFromTo(from, to int) []int {
     return result
 }
 
-// Randomize returns a slice containing the values of the original slice
-// in random order.
-func Randomize[T any](slice []T) []T {
-    result := make([]T, len(slice))
-    copy(result, slice)
-    for i := 0; i < len(result)-1; i++ {
-        j := rand.Intn(len(result) - i)
+// Randomize shuffles the elements in a slice in random order. Each order
+// is returned with equal probability.
+func Randomize[T any](slice []T) {
+    for i := 0; i < len(slice)-1; i++ {
+        j := rand.Intn(len(slice) - i)
         if j != 0 {
-            result[i], result[i+j] = result[i+j], result[i]
+            slice[i], slice[i+j] = slice[i+j], slice[i]
         }
     }
+}
+
+// Randomized returns a slice containing the values of the original slice
+// in random order. Each order is returned with equal probability.
+func Randomized[T any](slice []T) []T {
+    result := make([]T, len(slice))
+    copy(result, slice)
+    Randomize(result)
     return result
 }
 
@@ -498,15 +504,6 @@ func SortedLex[T cmp.Ordered](slice [][]T) [][]T {
     slc := CopySlice(slice)
     SortLex(slc)
     return slc
-}
-
-func factorial(n int) int {
-    Assert(n <= 20)
-    result := 1
-    for i := 1; i <= n; i++ {
-        result *= i
-    }
-    return result
 }
 
 func bigFactorial(n *big.Int) *big.Int {
@@ -562,13 +559,14 @@ func nthPermutationOf[T any](slice []T, n *big.Int) []T {
 // returns [][]int{{1,2,3}, {1,3,2}, {2,1,3}, {2,3,1}, {3,1,2}, {3,2,1}}
 // (in no specific order).
 func Permutations[T any](slice []T) [][]T {
-    Assert(len(slice) <= 20, "Cannot make permutations with huge slices")
     if len(slice) == 0 {
         return [][]T{}
     }
-    numPermutations := factorial(len(slice))
+    numPermutationsBig := bigFactorial(big.NewInt(int64(len(slice))))
+    Assert(numPermutationsBig.IsInt64(), "Cannot make permutations with huge slices (as length %d)", len(slice))
+    numPermutations := numPermutationsBig.Int64()
     result := make([][]T, numPermutations)
-    for i := 0; i < numPermutations; i++ {
+    for i := int64(0); i < numPermutations; i++ {
         result[i] = nthPermutationOf(slice, big.NewInt(int64(i)))
     }
     return result

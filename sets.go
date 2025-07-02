@@ -202,7 +202,7 @@ func Union[C comparable](set1 Set[C], set2 Set[C]) Set[C] {
 // returns {2}
 func Intersection[C comparable](set1 Set[C], set2 Set[C]) Set[C] {
     if len(set1) > len(set2) {
-        return Intersection(set2, set1)
+        return Intersection[C](set2, set1)
     }
     result := Set[C]{}
     for key, _ := range set1 {
