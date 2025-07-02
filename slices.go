@@ -552,12 +552,18 @@ func nthPermutationOf[T any](slice []T, n *big.Int) []T {
 }
 
 // Permutations takes a slice of values and returns a slice of slices
-// containing each possible permutation. Example:
+// containing each possible permutation.
+//
+// The original slice needs to be quite small. (The function itself imposes
+// a hard boundary of 20, but practically also lower values will likely exceed
+// the memory.) Use PermutationsIter() if you don't want to use up memory.
+//
+// Example:
 //
 //  Permutations([]int{1,2,3})
 //
 // returns [][]int{{1,2,3}, {1,3,2}, {2,1,3}, {2,3,1}, {3,1,2}, {3,2,1}}
-// (in no specific order).
+// (in arbitrary order).
 func Permutations[T any](slice []T) [][]T {
     if len(slice) == 0 {
         return [][]T{}
@@ -573,7 +579,12 @@ func Permutations[T any](slice []T) [][]T {
 }
 
 // PermutationsIter takes a slice of values and returns an iterator to loop across
-// all iterations of elements of that slice. Example:
+// all iterations of elements of that slice.
+//
+// Different from Permutations(), the concrete permutations are not calculated, so
+// the size of the slice can be large without using space.
+//
+// Example:
 //
 //  for perm := range PermutationsIter([]int{1,2}) {
 //      fmt.Println(perm)
