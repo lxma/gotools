@@ -21,7 +21,7 @@ All functionality is backed with tests and used. However, some parts could be of
 implementation of sets is slower as the implementation in e.g. Java.) However, all functionality should be at least as
 good as what you can hack down on your own in a cup of hours.
 
-One goal of this library is also to provide /simple/ functionality. You should have no issues forking and maintaining
+One goal of this library is also to provide *simple* functionality. You should have no issues forking and maintaining
 this library by yourself in case you find my support no-efficient.
 
 Still, the current state is sufficient for myself.
